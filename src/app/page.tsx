@@ -23,12 +23,14 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [loadingAccounts, setLoadingAccounts] = useState(true);
 
   useEffect(() => {
     fetch('/api/accounts')
       .then((r) => r.json())
       .then((data) => Array.isArray(data) ? setAccounts(data) : setAccounts([]))
-      .catch(() => {});
+      .catch(() => {})
+      .finally(() => setLoadingAccounts(false));
   }, []);
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -146,13 +148,17 @@ export default function LoginPage() {
           )}
         </AnimatePresence>
 
-        {accounts.length === 0 && (
-          <Card className="text-center text-gray-500">
-            <p>אין חשבונות עדיין. יש להריץ את סקריפט ה-seed.</p>
-            <code className="block mt-2 text-sm bg-gray-100 p-2 rounded-lg direction-ltr">
-              npm run seed
-            </code>
-          </Card>
+        {loadingAccounts && (
+          <div className="flex flex-col items-center justify-center py-8 gap-3">
+            <motion.div
+              animate={{ rotate: [0, 10, -10, 0] }}
+              transition={{ repeat: Infinity, duration: 1.5 }}
+              className="text-5xl"
+            >
+              🐷
+            </motion.div>
+            <p className="text-gray-400 text-sm">{STRINGS.common.loading}</p>
+          </div>
         )}
       </div>
     </div>
