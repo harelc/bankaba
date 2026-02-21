@@ -93,3 +93,35 @@ export async function PATCH(
     return NextResponse.json({ error: 'שגיאת שרת' }, { status: 500 });
   }
 }
+
+// DELETE /api/accounts/[id] - admin only, cascades to deposits and transactions
+export async function DELETE(
+  _request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    await requireAdmin();
+    const { id } = await params;
+
+    // Don't allow deleting admin accounts
+    const account = (await db.execute({ sql: 'SELECT role FROM accounts WHERE id = ?', args: [id] })).rows[0];
+    if (!account) {
+      return NextResponse.json({ error: 'חשבון לא נמצא' }, { status: 404 });
+    }
+    if (account.role === 'admin') {
+      return NextResponse.json({ error: 'לא ניתן למחוק חשבון מנהל' }, { status: 400 });
+    }
+
+    // Delete transactions, then deposits, then account
+    await db.execute({ sql: 'DELETE FROM transactions WHERE account_id = ?', args: [id] });
+    await db.execute({ sql: 'DELETE FROM deposits WHERE account_id = ?', args: [id] });
+    await db.execute({ sql: 'DELETE FROM accounts WHERE id = ?', args: [id] });
+
+    return NextResponse.json({ ok: true });
+  } catch (error) {
+    if (error instanceof Error && (error.message === 'Forbidden' || error.message === 'Unauthorized')) {
+      return NextResponse.json({ error: 'אין הרשאה' }, { status: 403 });
+    }
+    return NextResponse.json({ error: 'שגיאת שרת' }, { status: 500 });
+  }
+}

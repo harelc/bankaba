@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { STRINGS, AVATARS } from '@/lib/constants';
 import { formatCurrency } from '@/lib/utils';
-import { ArrowRight, Loader2 } from 'lucide-react';
+import { ArrowRight, Loader2, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 import type { AccountWithBalance } from '@/types';
 
@@ -50,6 +50,12 @@ export default function AdminAccountsPage() {
 
     setEditing(null);
     setSaving(false);
+    loadAccounts();
+  };
+
+  const deleteAccount = async (id: string, name: string) => {
+    if (!confirm(`למחוק את החשבון של ${name}? כל החיסכונות והפעולות יימחקו לצמיתות.`)) return;
+    await fetch(`/api/accounts/${id}`, { method: 'DELETE' });
     loadAccounts();
   };
 
@@ -118,9 +124,14 @@ export default function AdminAccountsPage() {
                     </p>
                   </div>
                 </div>
-                <Button variant="ghost" size="sm" onClick={() => startEdit(account)}>
-                  עריכה
-                </Button>
+                <div className="flex gap-1">
+                  <Button variant="ghost" size="sm" onClick={() => startEdit(account)}>
+                    עריכה
+                  </Button>
+                  <Button variant="ghost" size="sm" onClick={() => deleteAccount(account.id, account.name)}>
+                    <Trash2 className="w-4 h-4 text-red-400" />
+                  </Button>
+                </div>
               </div>
             )}
           </Card>
