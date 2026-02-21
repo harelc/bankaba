@@ -27,7 +27,7 @@ export default function LoginPage() {
   useEffect(() => {
     fetch('/api/accounts')
       .then((r) => r.json())
-      .then(setAccounts)
+      .then((data) => Array.isArray(data) ? setAccounts(data) : setAccounts([]))
       .catch(() => {});
   }, []);
 

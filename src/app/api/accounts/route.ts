@@ -32,7 +32,11 @@ export async function GET() {
       return NextResponse.json(result.rows);
     }
 
-    return NextResponse.json({ error: 'אין הרשאה' }, { status: 403 });
+    // For children: return basic account list (same as no session)
+    const result = await db.execute(
+      'SELECT id, name, avatar_emoji, role FROM accounts ORDER BY role DESC, name ASC'
+    );
+    return NextResponse.json(result.rows);
   } catch (error) {
     console.error('Get accounts error:', error);
     return NextResponse.json({ error: 'שגיאת שרת' }, { status: 500 });
