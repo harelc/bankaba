@@ -4,17 +4,13 @@ import { initializeDatabase } from '@/lib/db-schema';
 import { requireAdmin } from '@/lib/auth';
 import { z } from 'zod/v4';
 
-// GET /api/admin/settings
+// GET /api/admin/settings - readable by any authenticated user
 export async function GET() {
   try {
-    await requireAdmin();
     await initializeDatabase();
     const result = await db.execute('SELECT * FROM settings WHERE id = 1');
     return NextResponse.json(result.rows[0] || {});
   } catch (error) {
-    if (error instanceof Error && (error.message === 'Forbidden' || error.message === 'Unauthorized')) {
-      return NextResponse.json({ error: 'אין הרשאה' }, { status: 403 });
-    }
     return NextResponse.json({ error: 'שגיאת שרת' }, { status: 500 });
   }
 }
