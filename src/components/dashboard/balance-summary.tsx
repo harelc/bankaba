@@ -3,6 +3,7 @@
 import { Card } from '@/components/ui/card';
 import { formatCurrency } from '@/lib/utils';
 import { STRINGS } from '@/lib/constants';
+import { AnimatedCurrency } from '@/components/ui/animated-number';
 import { motion } from 'framer-motion';
 import type { Deposit } from '@/types';
 
@@ -24,12 +25,11 @@ export function BalanceSummary({ deposits }: BalanceSummaryProps) {
       <div className="text-center">
         <p className="text-purple-200 text-sm mb-1">{STRINGS.dashboard.totalBalance}</p>
         <motion.div
-          key={totalBalance}
           initial={{ scale: 0.9 }}
           animate={{ scale: 1 }}
           className="text-4xl sm:text-5xl font-bold mb-2"
         >
-          {formatCurrency(totalBalance)}
+          <AnimatedCurrency value={totalBalance} duration={1200} />
         </motion.div>
         {totalInterest > 0 && (
           <motion.p

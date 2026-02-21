@@ -113,7 +113,7 @@ export default function NewDepositPage() {
                     : 'border-gray-200 text-gray-500 hover:border-gray-300'
                 }`}
               >
-                <span className="text-2xl block mb-1">🔓</span>
+                <span className="text-2xl block mb-1">🌊</span>
                 <span className="font-medium">{STRINGS.deposits.flexible}</span>
                 {settings && (
                   <span className="block text-xs mt-1">
@@ -130,7 +130,7 @@ export default function NewDepositPage() {
                     : 'border-gray-200 text-gray-500 hover:border-gray-300'
                 }`}
               >
-                <span className="text-2xl block mb-1">🔒</span>
+                <span className="text-2xl block mb-1">🔐</span>
                 <span className="font-medium">{STRINGS.deposits.fixed}</span>
                 {settings && (
                   <span className="block text-xs mt-1">

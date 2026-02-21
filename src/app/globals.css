@@ -25,4 +25,27 @@ body {
   font-family: 'Heebo', sans-serif;
   background: linear-gradient(135deg, var(--color-purple-50) 0%, var(--color-mint-50) 50%, var(--color-yellow-50) 100%);
   min-height: 100vh;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Smoother scrolling on mobile */
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+/* Better touch targets */
+button, a, [role="button"] {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+/* Safe area insets for notched phones */
+main {
+  padding-bottom: env(safe-area-inset-bottom, 16px);
+}
+
+/* Prevent zoom on input focus in iOS */
+input, select, textarea {
+  font-size: 16px;
 }

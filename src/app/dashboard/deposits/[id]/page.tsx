@@ -12,6 +12,8 @@ import { formatCurrency, formatPercent, daysBetween } from '@/lib/utils';
 import { STRINGS } from '@/lib/constants';
 import { ArrowRight, TrendingUp, Calendar, Wallet, Loader2 } from 'lucide-react';
 import Link from 'next/link';
+import { InterestChart } from '@/components/dashboard/interest-chart';
+import { AnimatedCurrency } from '@/components/ui/animated-number';
 
 export default function DepositDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
@@ -68,7 +70,7 @@ export default function DepositDetailPage({ params }: { params: Promise<{ id: st
           </Badge>
         </div>
 
-        <div className="text-4xl font-bold mt-4">{formatCurrency(displayBalance)}</div>
+        <AnimatedCurrency value={displayBalance} className="text-4xl font-bold mt-4 block" />
 
         {deposit.type === 'fixed' && deposit.maturity_date && deposit.status === 'active' && daysLeft !== null && (
           <div className="mt-4">
@@ -109,6 +111,10 @@ export default function DepositDetailPage({ params }: { params: Promise<{ id: st
           </Card>
         )}
       </div>
+
+      {deposit.status === 'active' && (
+        <InterestChart deposit={deposit} />
+      )}
 
       {interestEarned > 0 && (
         <Card className="mb-6 bg-mint-50 border border-mint-200">

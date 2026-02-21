@@ -4,18 +4,16 @@ import { jwtVerify } from 'jose';
 
 const SECRET = new TextEncoder().encode(process.env.JWT_SECRET || 'bankaba-dev-secret');
 
-const PUBLIC_PATHS = ['/', '/api/auth/login', '/api/cron/interest'];
-
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Allow public paths
-  if (PUBLIC_PATHS.includes(pathname)) {
+  // Skip API routes entirely — auth is handled inside each route handler
+  if (pathname.startsWith('/api')) {
     return NextResponse.next();
   }
 
-  // Allow static assets and Next.js internals
-  if (pathname.startsWith('/_next') || pathname.startsWith('/favicon') || pathname.includes('.')) {
+  // Public pages
+  if (pathname === '/') {
     return NextResponse.next();
   }
 
@@ -28,7 +26,7 @@ export async function middleware(request: NextRequest) {
     const { payload } = await jwtVerify(token, SECRET);
 
     // Admin routes require admin role
-    if (pathname.startsWith('/admin') || pathname.startsWith('/api/admin')) {
+    if (pathname.startsWith('/admin')) {
       if (payload.role !== 'admin') {
         return NextResponse.redirect(new URL('/dashboard', request.url));
       }
@@ -36,7 +34,6 @@ export async function middleware(request: NextRequest) {
 
     return NextResponse.next();
   } catch {
-    // Invalid token — redirect to login
     const response = NextResponse.redirect(new URL('/', request.url));
     response.cookies.delete('session');
     return response;

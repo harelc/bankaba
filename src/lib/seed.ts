@@ -2,7 +2,10 @@ import { createClient } from '@libsql/client';
 import { hash } from 'bcryptjs';
 
 async function seed() {
-  const db = createClient({ url: 'file:local.db' });
+  const url = process.env.TURSO_DATABASE_URL;
+  const db = url
+    ? createClient({ url, authToken: process.env.TURSO_AUTH_TOKEN })
+    : createClient({ url: 'file:local.db' });
 
   // Create tables
   const SCHEMA_SQL = [
@@ -72,9 +75,8 @@ async function seed() {
 
   // Create child accounts
   const children = [
-    { id: 'child001', name: 'נועה', emoji: '🦊', password: '1234' },
-    { id: 'child002', name: 'איתי', emoji: '🦁', password: '1234' },
-    { id: 'child003', name: 'מאיה', emoji: '🦋', password: '1234' },
+    { id: 'child001', name: 'אייל', emoji: '🦁', password: '1234' },
+    { id: 'child002', name: 'רעות', emoji: '🦊', password: '1234' },
   ];
 
   for (const child of children) {
@@ -85,12 +87,10 @@ async function seed() {
     });
   }
 
-  // Create sample deposits
-  const deposits = [
-    { id: 'dep001', accountId: 'child001', name: 'חיסכון לאופניים', type: 'flexible', amount: 50000, rate: 300 },
-    { id: 'dep002', accountId: 'child001', name: 'חיסכון ליום הולדת', type: 'fixed', amount: 100000, rate: 600, termDays: 365 },
-    { id: 'dep003', accountId: 'child002', name: 'חיסכון למשחק חדש', type: 'flexible', amount: 25000, rate: 300 },
-    { id: 'dep004', accountId: 'child003', name: 'חיסכון לטיול', type: 'fixed', amount: 75000, rate: 500, termDays: 180 },
+  // Create sample deposits - 2500 shekel (250000 agorot) each
+  const deposits: { id: string; accountId: string; name: string; type: string; amount: number; rate: number; termDays?: number }[] = [
+    { id: 'dep001', accountId: 'child001', name: 'החיסכון של אייל', type: 'flexible', amount: 250000, rate: 300 },
+    { id: 'dep002', accountId: 'child002', name: 'החיסכון של רעות', type: 'flexible', amount: 250000, rate: 300 },
   ];
 
   for (const dep of deposits) {
@@ -117,9 +117,8 @@ async function seed() {
   console.log('');
   console.log('Accounts:');
   console.log('  👨‍💼 אבא (admin) - password: admin123');
-  console.log('  🦊 נועה - password: 1234');
-  console.log('  🦁 איתי - password: 1234');
-  console.log('  🦋 מאיה - password: 1234');
+  console.log('  🦁 אייל - password: 1234');
+  console.log('  🦊 רעות - password: 1234');
   console.log('');
   console.log('Run: npm run dev');
 }

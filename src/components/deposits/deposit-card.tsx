@@ -4,6 +4,7 @@ import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { formatCurrency, formatPercent, formatDate, daysBetween } from '@/lib/utils';
 import { STRINGS } from '@/lib/constants';
+import { AnimatedCurrency } from '@/components/ui/animated-number';
 import { TrendingUp, Calendar, Sparkles } from 'lucide-react';
 import Link from 'next/link';
 import type { Deposit } from '@/types';
@@ -26,9 +27,11 @@ export function DepositCard({ deposit, index = 0 }: DepositCardProps) {
       initial={{ y: 20, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ delay: index * 0.1 }}
+      whileHover={{ scale: 1.02, y: -4 }}
+      whileTap={{ scale: 0.98 }}
     >
       <Link href={`/dashboard/deposits/${deposit.id}`}>
-        <Card className="hover:scale-[1.02] transition-transform cursor-pointer">
+        <Card className="cursor-pointer hover:shadow-xl hover:shadow-purple-100 transition-shadow">
           <div className="flex items-start justify-between mb-4">
             <div>
               <h3 className="font-bold text-lg text-gray-800">{deposit.name}</h3>
@@ -45,7 +48,7 @@ export function DepositCard({ deposit, index = 0 }: DepositCardProps) {
           </div>
 
           <div className="text-3xl font-bold text-purple-600 mb-4">
-            {formatCurrency(displayBalance)}
+            <AnimatedCurrency value={displayBalance} duration={800} />
           </div>
 
           <div className="flex items-center gap-4 text-sm text-gray-500">
