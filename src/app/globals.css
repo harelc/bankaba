@@ -1,0 +1,28 @@
+@import "tailwindcss";
+
+@theme {
+  --color-purple-50: #faf5ff;
+  --color-purple-100: #f3e8ff;
+  --color-purple-200: #e9d5ff;
+  --color-purple-300: #d8b4fe;
+  --color-purple-400: #c084fc;
+  --color-purple-500: #a855f7;
+  --color-purple-600: #9333ea;
+  --color-mint-50: #f0fdfa;
+  --color-mint-100: #ccfbf1;
+  --color-mint-200: #99f6e4;
+  --color-mint-300: #5eead4;
+  --color-mint-400: #2dd4bf;
+  --color-mint-500: #14b8a6;
+  --color-yellow-50: #fefce8;
+  --color-yellow-100: #fef9c3;
+  --color-yellow-200: #fef08a;
+  --color-yellow-300: #fde047;
+  --color-yellow-400: #facc15;
+}
+
+body {
+  font-family: 'Heebo', sans-serif;
+  background: linear-gradient(135deg, var(--color-purple-50) 0%, var(--color-mint-50) 50%, var(--color-yellow-50) 100%);
+  min-height: 100vh;
+}
