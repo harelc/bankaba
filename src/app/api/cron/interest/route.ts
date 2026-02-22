@@ -5,14 +5,7 @@ import { accrueInterest } from '@/lib/interest';
 import { daysBetween } from '@/lib/utils';
 
 // POST /api/cron/interest - daily interest accrual
-export async function POST(request: NextRequest) {
-  // Verify cron secret (Netlify scheduled function or manual trigger)
-  const authHeader = request.headers.get('authorization');
-  const cronSecret = process.env.CRON_SECRET;
-  if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
-
+export async function POST(_request: NextRequest) {
   try {
     await initializeDatabase();
     const today = new Date().toISOString().split('T')[0];
