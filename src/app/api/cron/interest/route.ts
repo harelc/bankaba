@@ -20,6 +20,11 @@ export async function POST(_request: NextRequest) {
     let depositsProcessed = 0;
     let matured = 0;
 
+    console.log(`[cron] today=${today}, active deposits found=${deposits.rows.length}`);
+    for (const d of deposits.rows) {
+      console.log(`[cron] deposit=${d.id} balance=${d.balance_agorot} last_accrued=${d.interest_last_accrued_at} rate=${d.interest_rate_bps}`);
+    }
+
     for (const deposit of deposits.rows) {
       const days = daysBetween(deposit.interest_last_accrued_at as string, today);
       if (days <= 0) continue;
@@ -69,6 +74,7 @@ export async function POST(_request: NextRequest) {
     return NextResponse.json({
       ok: true,
       date: today,
+      active_deposits_found: deposits.rows.length,
       deposits_processed: depositsProcessed,
       total_interest_agorot: totalAccrued,
       matured,
