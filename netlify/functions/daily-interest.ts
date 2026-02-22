@@ -1,8 +1,11 @@
 import type { Config } from "@netlify/functions";
 
-// Netlify scheduled function - triggers the interest cron API route
 export default async () => {
   const siteUrl = process.env.URL || 'http://localhost:3000';
+  const startTime = Date.now();
+
+  console.log(`[daily-interest] Starting at ${new Date().toISOString()}`);
+  console.log(`[daily-interest] Calling ${siteUrl}/api/cron/interest`);
 
   try {
     const response = await fetch(`${siteUrl}/api/cron/interest`, {
@@ -10,10 +13,16 @@ export default async () => {
     });
 
     const data = await response.json();
-    console.log('Interest accrual result:', data);
+    const duration = Date.now() - startTime;
+
+    console.log(`[daily-interest] Status: ${response.status}`);
+    console.log(`[daily-interest] Result: ${JSON.stringify(data)}`);
+    console.log(`[daily-interest] Completed in ${duration}ms`);
+
     return new Response(JSON.stringify(data), { status: 200 });
   } catch (error) {
-    console.error('Interest accrual failed:', error);
+    const duration = Date.now() - startTime;
+    console.error(`[daily-interest] FAILED after ${duration}ms:`, error);
     return new Response(JSON.stringify({ error: 'Failed' }), { status: 500 });
   }
 };
