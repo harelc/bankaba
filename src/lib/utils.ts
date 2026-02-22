@@ -29,8 +29,13 @@ export function formatPercent(bps: number): string {
 }
 
 export function daysBetween(dateA: string | Date, dateB: string | Date): number {
-  const a = new Date(dateA);
-  const b = new Date(dateB);
+  // Compare date portions only (strip time) to avoid timezone issues
+  const toDateOnly = (d: string | Date) => {
+    const s = typeof d === 'string' ? d : d.toISOString();
+    return new Date(s.split('T')[0].split(' ')[0] + 'T00:00:00Z');
+  };
+  const a = toDateOnly(dateA);
+  const b = toDateOnly(dateB);
   const msPerDay = 1000 * 60 * 60 * 24;
-  return Math.floor((b.getTime() - a.getTime()) / msPerDay);
+  return Math.round((b.getTime() - a.getTime()) / msPerDay);
 }
