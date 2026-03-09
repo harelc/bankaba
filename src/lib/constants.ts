@@ -10,7 +10,8 @@ export const STRINGS = {
   dashboard: {
     title: 'החיסכונות שלי',
     totalBalance: 'סך הכל',
-    grewToday: 'הכסף שלך גדל היום ב-',
+    totalInterest: 'סה״כ רווחים:',
+    grewToday: 'גדל היום ב-',
     newDeposit: 'הפקדה חדשה',
     recentTransactions: 'פעולות אחרונות',
     noDeposits: 'עדיין אין חיסכונות. בואו נתחיל!',

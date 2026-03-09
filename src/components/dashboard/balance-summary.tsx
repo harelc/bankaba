@@ -4,6 +4,7 @@ import { Card } from '@/components/ui/card';
 import { formatCurrency } from '@/lib/utils';
 import { STRINGS } from '@/lib/constants';
 import { AnimatedCurrency } from '@/components/ui/animated-number';
+import { accrueInterest } from '@/lib/interest';
 import { motion } from 'framer-motion';
 import type { Deposit } from '@/types';
 
@@ -19,6 +20,13 @@ export function BalanceSummary({ deposits }: BalanceSummaryProps) {
   );
   const totalPrincipal = activeDeposits.reduce((sum, d) => sum + d.principal_agorot, 0);
   const totalInterest = totalBalance - totalPrincipal;
+
+  // Calculate just today's interest (1 day of accrual on current balances)
+  const todaysInterest = activeDeposits.reduce((sum, d) => {
+    const balance = d.projected_balance_agorot || d.balance_agorot;
+    const { interestEarned } = accrueInterest(balance, d.interest_rate_bps, 1);
+    return sum + interestEarned;
+  }, 0);
 
   return (
     <Card variant="highlight" className="mb-6">
@@ -37,9 +45,22 @@ export function BalanceSummary({ deposits }: BalanceSummaryProps) {
             animate={{ opacity: 1 }}
             className="text-purple-200 text-sm flex items-center justify-center gap-1"
           >
-            ✨ {STRINGS.dashboard.grewToday}
+            ✨ {STRINGS.dashboard.totalInterest}
             <span className="text-yellow-300 font-medium">
               {formatCurrency(totalInterest)}
+            </span>
+          </motion.p>
+        )}
+        {todaysInterest > 0 && (
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.3 }}
+            className="text-purple-200 text-xs mt-1"
+          >
+            {STRINGS.dashboard.grewToday}
+            <span className="text-yellow-300 font-medium">
+              {formatCurrency(todaysInterest)}
             </span>
           </motion.p>
         )}

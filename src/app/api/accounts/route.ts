@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { initializeDatabase } from '@/lib/db-schema';
 import { requireAdmin, hashPassword, getSession } from '@/lib/auth';
+import { projectBalance } from '@/lib/interest';
 import { z } from 'zod/v4';
 
 // GET /api/accounts - list all accounts (public for login page avatars, filtered for non-admin)
@@ -18,18 +19,39 @@ export async function GET() {
       return NextResponse.json(result.rows);
     }
 
-    // For admin: return full account details with balances
+    // For admin: return full account details with projected balances
     if (session.role === 'admin') {
-      const result = await db.execute(`
-        SELECT a.id, a.name, a.role, a.avatar_emoji, a.created_at,
-          COALESCE(SUM(d.balance_agorot), 0) as total_balance_agorot,
-          COUNT(d.id) as deposit_count
-        FROM accounts a
-        LEFT JOIN deposits d ON d.account_id = a.id AND d.status = 'active'
-        GROUP BY a.id
-        ORDER BY a.role DESC, a.name ASC
-      `);
-      return NextResponse.json(result.rows);
+      const accountsResult = await db.execute(
+        'SELECT id, name, role, avatar_emoji, created_at FROM accounts ORDER BY role DESC, name ASC'
+      );
+      const depositsResult = await db.execute(
+        "SELECT account_id, balance_agorot, interest_rate_bps, interest_last_accrued_at FROM deposits WHERE status = 'active'"
+      );
+
+      const accountsMap = new Map<string, { total: number; count: number }>();
+      for (const d of depositsResult.rows) {
+        const accountId = d.account_id as string;
+        const projected = projectBalance(
+          Number(d.balance_agorot),
+          Number(d.interest_rate_bps),
+          d.interest_last_accrued_at as string
+        );
+        const entry = accountsMap.get(accountId) || { total: 0, count: 0 };
+        entry.total += projected;
+        entry.count += 1;
+        accountsMap.set(accountId, entry);
+      }
+
+      const rows = accountsResult.rows.map((a) => {
+        const entry = accountsMap.get(a.id as string) || { total: 0, count: 0 };
+        return {
+          ...a,
+          total_balance_agorot: entry.total,
+          deposit_count: entry.count,
+        };
+      });
+
+      return NextResponse.json(rows);
     }
 
     // For children: return basic account list (same as no session)
