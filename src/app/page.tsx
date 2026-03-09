@@ -18,7 +18,7 @@ interface AccountPreview {
 
 export default function LoginPage() {
   const router = useRouter();
-  const { t } = useLocale();
+  const { t, locale, setLocale } = useLocale();
   const [accounts, setAccounts] = useState<AccountPreview[]>([]);
   const [selected, setSelected] = useState<AccountPreview | null>(null);
   const [password, setPassword] = useState('');
@@ -64,6 +64,12 @@ export default function LoginPage() {
 
   return (
     <div className="flex min-h-screen items-center justify-center p-4">
+      <button
+        onClick={() => setLocale(locale === 'he' ? 'en' : 'he')}
+        className="absolute top-4 end-4 text-xs font-medium text-purple-400 hover:text-purple-600 transition-colors"
+      >
+        {locale === 'he' ? 'EN' : 'HE'}
+      </button>
       <div className="w-full max-w-lg">
         <motion.div
           initial={{ y: -20, opacity: 0 }}
