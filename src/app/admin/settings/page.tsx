@@ -4,12 +4,13 @@ import { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { STRINGS } from '@/lib/constants';
+import { useLocale } from '@/contexts/locale-context';
 import { ArrowRight, Loader2, Save } from 'lucide-react';
 import Link from 'next/link';
 import type { Settings } from '@/types';
 
 export default function AdminSettingsPage() {
+  const { t } = useLocale();
   const [settings, setSettings] = useState<Settings | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -43,10 +44,10 @@ export default function AdminSettingsPage() {
       if (res.ok) {
         const data = await res.json();
         setSettings(data);
-        setMessage('ההגדרות נשמרו בהצלחה!');
+        setMessage(t.admin.settingsSaved);
       }
     } catch {
-      setMessage(STRINGS.common.error);
+      setMessage(t.common.error);
     }
     setSaving(false);
   };
@@ -63,15 +64,15 @@ export default function AdminSettingsPage() {
     <div>
       <Link href="/admin" className="inline-flex items-center gap-1 text-purple-500 hover:text-purple-700 mb-4">
         <ArrowRight className="w-4 h-4" />
-        {STRINGS.common.back}
+        {t.common.back}
       </Link>
 
-      <h1 className="text-2xl font-bold text-gray-800 mb-6">{STRINGS.admin.settings}</h1>
+      <h1 className="text-2xl font-bold text-gray-800 mb-6">{t.admin.settings}</h1>
 
       <Card>
         <form onSubmit={handleSubmit} className="space-y-5">
           <Input
-            label={`${STRINGS.admin.defaultFlexibleRate} (נקודות בסיס, 100 = 1%)`}
+            label={`${t.admin.defaultFlexibleRate} ${t.admin.basisPointsHint}`}
             type="number"
             min="0"
             max="10000"
@@ -81,7 +82,7 @@ export default function AdminSettingsPage() {
           <p className="text-xs text-gray-400 -mt-3">{(settings.default_flexible_rate_bps / 100).toFixed(2)}%</p>
 
           <Input
-            label={`${STRINGS.admin.defaultFixedRate} (נקודות בסיס)`}
+            label={`${t.admin.defaultFixedRate} ${t.admin.basisPointsHint}`}
             type="number"
             min="0"
             max="10000"
@@ -91,7 +92,7 @@ export default function AdminSettingsPage() {
           <p className="text-xs text-gray-400 -mt-3">{(settings.default_fixed_rate_bps / 100).toFixed(2)}%</p>
 
           <Input
-            label={`${STRINGS.admin.defaultPenalty} (%)`}
+            label={`${t.admin.defaultPenalty} (%)`}
             type="number"
             min="0"
             max="100"
@@ -100,7 +101,7 @@ export default function AdminSettingsPage() {
           />
 
           <Input
-            label={`${STRINGS.admin.minDeposit} (אגורות)`}
+            label={`${t.admin.minDeposit} ${t.admin.agorotHint}`}
             type="number"
             min="1"
             value={settings.min_deposit_agorot}
@@ -109,7 +110,7 @@ export default function AdminSettingsPage() {
           <p className="text-xs text-gray-400 -mt-3">= {(settings.min_deposit_agorot / 100).toFixed(2)} ₪</p>
 
           {message && (
-            <p className={`text-sm text-center ${message.includes('שגיאה') ? 'text-red-500' : 'text-green-600'}`}>
+            <p className={`text-sm text-center ${message === t.common.error ? 'text-red-500' : 'text-green-600'}`}>
               {message}
             </p>
           )}
@@ -118,7 +119,7 @@ export default function AdminSettingsPage() {
             {saving ? <Loader2 className="w-5 h-5 animate-spin" /> : (
               <>
                 <Save className="w-5 h-5 me-2" />
-                {STRINGS.admin.save}
+                {t.admin.save}
               </>
             )}
           </Button>

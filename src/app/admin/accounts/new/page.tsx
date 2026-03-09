@@ -5,12 +5,14 @@ import { useRouter } from 'next/navigation';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { STRINGS, AVATARS } from '@/lib/constants';
+import { useLocale } from '@/contexts/locale-context';
+import { AVATARS } from '@/lib/constants';
 import { ArrowRight, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 
 export default function NewAccountPage() {
   const router = useRouter();
+  const { t } = useLocale();
   const [name, setName] = useState('');
   const [password, setPassword] = useState('');
   const [avatar, setAvatar] = useState('🐷');
@@ -31,14 +33,14 @@ export default function NewAccountPage() {
 
       if (!res.ok) {
         const data = await res.json();
-        setError(data.error || STRINGS.common.error);
+        setError(data.error || t.common.error);
         setLoading(false);
         return;
       }
 
       router.push('/admin/accounts');
     } catch {
-      setError(STRINGS.common.error);
+      setError(t.common.error);
       setLoading(false);
     }
   };
@@ -47,25 +49,25 @@ export default function NewAccountPage() {
     <div>
       <Link href="/admin" className="inline-flex items-center gap-1 text-purple-500 hover:text-purple-700 mb-4">
         <ArrowRight className="w-4 h-4" />
-        {STRINGS.common.back}
+        {t.common.back}
       </Link>
 
-      <h1 className="text-2xl font-bold text-gray-800 mb-6">{STRINGS.admin.createAccount}</h1>
+      <h1 className="text-2xl font-bold text-gray-800 mb-6">{t.admin.createAccount}</h1>
 
       <Card>
         <form onSubmit={handleSubmit} className="space-y-5">
           <Input
-            label={STRINGS.admin.accountName}
-            placeholder="למשל: נועה"
+            label={t.admin.accountName}
+            placeholder={t.admin.namePlaceholder}
             value={name}
             onChange={(e) => setName(e.target.value)}
             required
           />
 
           <Input
-            label={STRINGS.admin.password}
+            label={t.admin.password}
             type="password"
-            placeholder="סיסמה פשוטה לילדים"
+            placeholder={t.admin.simplePasswordPlaceholder}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
@@ -73,7 +75,7 @@ export default function NewAccountPage() {
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              {STRINGS.admin.avatar}
+              {t.admin.avatar}
             </label>
             <div className="flex flex-wrap gap-2">
               {AVATARS.map((emoji) => (
@@ -94,7 +96,7 @@ export default function NewAccountPage() {
           {error && <p className="text-sm text-red-500 text-center">{error}</p>}
 
           <Button type="submit" className="w-full" size="lg" disabled={loading}>
-            {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : STRINGS.admin.createAccount}
+            {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : t.admin.createAccount}
           </Button>
         </form>
       </Card>

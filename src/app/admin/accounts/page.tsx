@@ -4,13 +4,15 @@ import { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { STRINGS, AVATARS } from '@/lib/constants';
+import { useLocale } from '@/contexts/locale-context';
+import { AVATARS } from '@/lib/constants';
 import { formatCurrency } from '@/lib/utils';
 import { ArrowRight, Loader2, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 import type { AccountWithBalance } from '@/types';
 
 export default function AdminAccountsPage() {
+  const { t } = useLocale();
   const [accounts, setAccounts] = useState<AccountWithBalance[]>([]);
   const [editing, setEditing] = useState<string | null>(null);
   const [editName, setEditName] = useState('');
@@ -54,7 +56,7 @@ export default function AdminAccountsPage() {
   };
 
   const deleteAccount = async (id: string, name: string) => {
-    if (!confirm(`למחוק את החשבון של ${name}? כל החיסכונות והפעולות יימחקו לצמיתות.`)) return;
+    if (!confirm(t.admin.confirmDeleteAccount(name))) return;
     await fetch(`/api/accounts/${id}`, { method: 'DELETE' });
     loadAccounts();
   };
@@ -65,13 +67,13 @@ export default function AdminAccountsPage() {
     <div>
       <Link href="/admin" className="inline-flex items-center gap-1 text-purple-500 hover:text-purple-700 mb-4">
         <ArrowRight className="w-4 h-4" />
-        {STRINGS.common.back}
+        {t.common.back}
       </Link>
 
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-gray-800">{STRINGS.admin.accounts}</h1>
+        <h1 className="text-2xl font-bold text-gray-800">{t.admin.accounts}</h1>
         <Link href="/admin/accounts/new">
-          <Button size="sm">{STRINGS.admin.createAccount}</Button>
+          <Button size="sm">{t.admin.createAccount}</Button>
         </Link>
       </div>
 
@@ -80,9 +82,9 @@ export default function AdminAccountsPage() {
           <Card key={account.id}>
             {editing === account.id ? (
               <div className="space-y-4">
-                <Input label={STRINGS.admin.accountName} value={editName} onChange={(e) => setEditName(e.target.value)} />
+                <Input label={t.admin.accountName} value={editName} onChange={(e) => setEditName(e.target.value)} />
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">{STRINGS.admin.avatar}</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">{t.admin.avatar}</label>
                   <div className="flex flex-wrap gap-2">
                     {AVATARS.map((emoji) => (
                       <button
@@ -99,17 +101,17 @@ export default function AdminAccountsPage() {
                   </div>
                 </div>
                 <Input
-                  label={`${STRINGS.admin.password} (השאר ריק לשמור)`}
+                  label={`${t.admin.password} ${t.admin.leaveEmptyToKeep}`}
                   type="password"
                   value={editPassword}
                   onChange={(e) => setEditPassword(e.target.value)}
                 />
                 <div className="flex gap-2">
                   <Button onClick={saveEdit} disabled={saving}>
-                    {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : STRINGS.admin.save}
+                    {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : t.admin.save}
                   </Button>
                   <Button variant="secondary" onClick={() => setEditing(null)}>
-                    {STRINGS.deposits.cancel}
+                    {t.deposits.cancel}
                   </Button>
                 </div>
               </div>
@@ -120,13 +122,13 @@ export default function AdminAccountsPage() {
                   <div>
                     <h3 className="font-bold text-gray-800">{account.name}</h3>
                     <p className="text-sm text-gray-500">
-                      {account.deposit_count} חיסכונות · {formatCurrency(Number(account.total_balance_agorot || 0))}
+                      {account.deposit_count} {t.admin.depositsCount} · {formatCurrency(Number(account.total_balance_agorot || 0))}
                     </p>
                   </div>
                 </div>
                 <div className="flex gap-1">
                   <Button variant="ghost" size="sm" onClick={() => startEdit(account)}>
-                    עריכה
+                    {t.admin.edit}
                   </Button>
                   <Button variant="ghost" size="sm" onClick={() => deleteAccount(account.id, account.name)}>
                     <Trash2 className="w-4 h-4 text-red-400" />

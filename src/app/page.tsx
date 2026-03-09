@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { STRINGS } from '@/lib/constants';
+import { useLocale } from '@/contexts/locale-context';
 import { Lock } from 'lucide-react';
 
 interface AccountPreview {
@@ -18,6 +18,7 @@ interface AccountPreview {
 
 export default function LoginPage() {
   const router = useRouter();
+  const { t } = useLocale();
   const [accounts, setAccounts] = useState<AccountPreview[]>([]);
   const [selected, setSelected] = useState<AccountPreview | null>(null);
   const [password, setPassword] = useState('');
@@ -48,7 +49,7 @@ export default function LoginPage() {
 
       if (!res.ok) {
         const data = await res.json();
-        setError(data.error || STRINGS.login.wrongPassword);
+        setError(data.error || t.login.wrongPassword);
         setLoading(false);
         return;
       }
@@ -56,7 +57,7 @@ export default function LoginPage() {
       const data = await res.json();
       router.push(data.account.role === 'admin' ? '/admin' : '/dashboard');
     } catch {
-      setError(STRINGS.common.error);
+      setError(t.common.error);
       setLoading(false);
     }
   };
@@ -71,9 +72,9 @@ export default function LoginPage() {
         >
           <span className="text-6xl mb-4 block">🏦</span>
           <h1 className="text-4xl font-bold text-purple-600">
-            {STRINGS.login.title}
+            {t.login.title}
           </h1>
-          <p className="text-gray-500 mt-2">{STRINGS.login.subtitle}</p>
+          <p className="text-gray-500 mt-2">{t.login.subtitle}</p>
         </motion.div>
 
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-6">
@@ -105,7 +106,7 @@ export default function LoginPage() {
                   </span>
                   {account.role === 'admin' && (
                     <span className="block text-xs text-purple-400 mt-1">
-                      מנהל
+                      {t.common.admin}
                     </span>
                   )}
                 </Card>
@@ -132,7 +133,7 @@ export default function LoginPage() {
                   <Lock className="absolute start-4 top-1/2 -translate-y-1/2 text-purple-300 w-5 h-5" />
                   <Input
                     type="password"
-                    placeholder={STRINGS.login.passwordPlaceholder}
+                    placeholder={t.login.passwordPlaceholder}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     className="ps-12"
@@ -141,7 +142,7 @@ export default function LoginPage() {
                   />
                 </div>
                 <Button type="submit" className="w-full" size="lg" disabled={loading}>
-                  {loading ? STRINGS.common.loading : STRINGS.login.loginButton}
+                  {loading ? t.common.loading : t.login.loginButton}
                 </Button>
               </Card>
             </motion.form>
@@ -157,7 +158,7 @@ export default function LoginPage() {
             >
               🐷
             </motion.div>
-            <p className="text-gray-400 text-sm">{STRINGS.common.loading}</p>
+            <p className="text-gray-400 text-sm">{t.common.loading}</p>
           </div>
         )}
       </div>

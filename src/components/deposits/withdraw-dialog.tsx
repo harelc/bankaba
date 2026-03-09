@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { Dialog } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { STRINGS } from '@/lib/constants';
+import { useLocale } from '@/contexts/locale-context';
 import { formatCurrency } from '@/lib/utils';
 import { AlertTriangle } from 'lucide-react';
 import type { Deposit } from '@/types';
@@ -17,6 +17,7 @@ interface WithdrawDialogProps {
 }
 
 export function WithdrawDialog({ deposit, open, onClose, onConfirm }: WithdrawDialogProps) {
+  const { t } = useLocale();
   const [loading, setLoading] = useState(false);
 
   const displayBalance = deposit.projected_balance_agorot || deposit.balance_agorot;
@@ -37,20 +38,20 @@ export function WithdrawDialog({ deposit, open, onClose, onConfirm }: WithdrawDi
     <Dialog open={open} onClose={onClose}>
       <div className="text-center">
         <h3 className="text-xl font-bold text-gray-800 mb-4">
-          {STRINGS.deposits.withdrawConfirm}
+          {t.deposits.withdrawConfirm}
         </h3>
 
         {isEarly && (
           <div className="bg-yellow-50 border border-yellow-200 rounded-2xl p-4 mb-4">
             <AlertTriangle className="w-8 h-8 text-yellow-500 mx-auto mb-2" />
             <p className="text-sm text-yellow-700">
-              {STRINGS.deposits.withdrawPenalty}{' '}
+              {t.deposits.withdrawPenalty}{' '}
               <strong>{deposit.early_withdrawal_penalty_pct}%</strong>{' '}
-              {STRINGS.deposits.ofEarnedInterest}
+              {t.deposits.ofEarnedInterest}
             </p>
             <div className="mt-3 space-y-1 text-sm">
               <div className="flex justify-between">
-                <span>{STRINGS.deposits.penaltyAmount}:</span>
+                <span>{t.deposits.penaltyAmount}:</span>
                 <span className="text-red-600 font-medium">
                   -{formatCurrency(penalty.penaltyAmount)}
                 </span>
@@ -60,7 +61,7 @@ export function WithdrawDialog({ deposit, open, onClose, onConfirm }: WithdrawDi
         )}
 
         <div className="bg-purple-50 rounded-2xl p-4 mb-6">
-          <p className="text-sm text-gray-600">{STRINGS.deposits.youWillReceive}</p>
+          <p className="text-sm text-gray-600">{t.deposits.youWillReceive}</p>
           <p className="text-3xl font-bold text-purple-600 mt-1">
             {formatCurrency(penalty.netAmount)}
           </p>
@@ -73,10 +74,10 @@ export function WithdrawDialog({ deposit, open, onClose, onConfirm }: WithdrawDi
             onClick={handleConfirm}
             disabled={loading}
           >
-            {loading ? STRINGS.common.loading : STRINGS.deposits.confirmWithdraw}
+            {loading ? t.common.loading : t.deposits.confirmWithdraw}
           </Button>
           <Button variant="secondary" className="flex-1" onClick={onClose}>
-            {STRINGS.deposits.cancel}
+            {t.deposits.cancel}
           </Button>
         </div>
       </div>

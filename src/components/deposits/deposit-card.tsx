@@ -3,7 +3,7 @@
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { formatCurrency, formatPercent, formatDate, daysBetween } from '@/lib/utils';
-import { STRINGS } from '@/lib/constants';
+import { useLocale } from '@/contexts/locale-context';
 import { AnimatedCurrency } from '@/components/ui/animated-number';
 import { TrendingUp, Calendar, Sparkles } from 'lucide-react';
 import Link from 'next/link';
@@ -16,6 +16,7 @@ interface DepositCardProps {
 }
 
 export function DepositCard({ deposit, index = 0 }: DepositCardProps) {
+  const { t } = useLocale();
   const displayBalance = deposit.projected_balance_agorot || deposit.balance_agorot;
   const interestEarned = displayBalance - deposit.principal_agorot;
   const daysLeft = deposit.maturity_date
@@ -36,7 +37,7 @@ export function DepositCard({ deposit, index = 0 }: DepositCardProps) {
             <div>
               <h3 className="font-bold text-lg text-gray-800">{deposit.name}</h3>
               <Badge variant={deposit.type === 'fixed' ? 'purple' : 'mint'}>
-                {deposit.type === 'fixed' ? STRINGS.deposits.fixed : STRINGS.deposits.flexible}
+                {deposit.type === 'fixed' ? t.deposits.fixed : t.deposits.flexible}
               </Badge>
             </div>
             {deposit.status === 'active' && interestEarned > 0 && (
@@ -59,12 +60,12 @@ export function DepositCard({ deposit, index = 0 }: DepositCardProps) {
             {daysLeft !== null && (
               <div className="flex items-center gap-1">
                 <Calendar className="w-4 h-4" />
-                <span>{daysLeft} {STRINGS.deposits.daysLeft}</span>
+                <span>{daysLeft} {t.deposits.daysLeft}</span>
               </div>
             )}
             {deposit.status !== 'active' && (
               <Badge variant={deposit.status === 'matured' ? 'yellow' : 'gray'}>
-                {STRINGS.deposits.status[deposit.status]}
+                {t.deposits.status[deposit.status]}
               </Badge>
             )}
           </div>

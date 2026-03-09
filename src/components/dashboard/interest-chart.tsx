@@ -11,6 +11,7 @@ import {
 } from 'recharts';
 import { Card } from '@/components/ui/card';
 import { formatCurrency } from '@/lib/utils';
+import { useLocale } from '@/contexts/locale-context';
 import type { Deposit } from '@/types';
 
 interface InterestChartProps {
@@ -18,6 +19,8 @@ interface InterestChartProps {
 }
 
 export function InterestChart({ deposit }: InterestChartProps) {
+  const { t, dir } = useLocale();
+
   const data = useMemo(() => {
     const points: { day: number; label: string; balance: number }[] = [];
     const dailyRate = deposit.interest_rate_bps / 10000 / 365;
@@ -29,7 +32,7 @@ export function InterestChart({ deposit }: InterestChartProps) {
     // Generate ~20 data points across the timeline
     const step = Math.max(1, Math.floor(totalDays / 20));
 
-    points.push({ day: 0, label: 'היום', balance });
+    points.push({ day: 0, label: t.chart.today, balance });
 
     for (let d = step; d <= totalDays; d += step) {
       for (let i = 0; i < step; i++) {
@@ -37,10 +40,10 @@ export function InterestChart({ deposit }: InterestChartProps) {
       }
       const monthsFromNow = d / 30;
       const label = monthsFromNow < 1
-        ? `${d} ימים`
+        ? `${d} ${t.chart.days}`
         : monthsFromNow < 12
-          ? `${Math.round(monthsFromNow)} חודשים`
-          : `${(monthsFromNow / 12).toFixed(1)} שנים`;
+          ? `${Math.round(monthsFromNow)} ${t.chart.months}`
+          : `${(monthsFromNow / 12).toFixed(1)} ${t.chart.years}`;
       points.push({ day: d, label, balance });
     }
 
@@ -52,22 +55,22 @@ export function InterestChart({ deposit }: InterestChartProps) {
       }
       points.push({
         day: totalDays,
-        label: deposit.type === 'fixed' ? 'פדיון' : 'שנה',
+        label: deposit.type === 'fixed' ? t.chart.maturity : t.chart.year,
         balance,
       });
     }
 
     return points;
-  }, [deposit]);
+  }, [deposit, t]);
 
   const totalGrowth = data[data.length - 1].balance - deposit.principal_agorot;
 
   return (
     <Card className="mb-6">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="font-bold text-gray-800">📈 תחזית צמיחה</h3>
+        <h3 className="font-bold text-gray-800">📈 {t.chart.growthForecast}</h3>
         <span className="text-sm text-mint-500 font-medium">
-          +{formatCurrency(totalGrowth)} ריבית צפויה
+          +{formatCurrency(totalGrowth)} {t.chart.expectedInterest}
         </span>
       </div>
       <div className="h-52 -ms-2">
@@ -96,13 +99,13 @@ export function InterestChart({ deposit }: InterestChartProps) {
             />
             <Tooltip
               // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              formatter={(value: any) => [formatCurrency(Number(value)), 'יתרה']}
+              formatter={(value: any) => [formatCurrency(Number(value)), t.chart.balance]}
               labelFormatter={(label: any) => String(label)}
               contentStyle={{
                 borderRadius: '16px',
                 border: 'none',
                 boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
-                direction: 'rtl',
+                direction: dir,
                 fontSize: '13px',
               }}
             />

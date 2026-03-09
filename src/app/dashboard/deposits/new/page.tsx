@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { STRINGS } from '@/lib/constants';
+import { useLocale } from '@/contexts/locale-context';
 import { ArrowRight, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import type { Settings } from '@/types';
@@ -13,6 +13,7 @@ import { formatPercent } from '@/lib/utils';
 
 export default function NewDepositPage() {
   const router = useRouter();
+  const { t } = useLocale();
   const [settings, setSettings] = useState<Settings | null>(null);
   const [name, setName] = useState('');
   const [amount, setAmount] = useState('');
@@ -35,7 +36,7 @@ export default function NewDepositPage() {
 
     const amountAgorot = Math.round(parseFloat(amount) * 100);
     if (isNaN(amountAgorot) || amountAgorot <= 0) {
-      setError('סכום לא תקין');
+      setError(t.deposits.invalidAmount);
       setLoading(false);
       return;
     }
@@ -54,14 +55,14 @@ export default function NewDepositPage() {
 
       if (!res.ok) {
         const data = await res.json();
-        setError(data.error || STRINGS.common.error);
+        setError(data.error || t.common.error);
         setLoading(false);
         return;
       }
 
       router.push('/dashboard');
     } catch {
-      setError(STRINGS.common.error);
+      setError(t.common.error);
       setLoading(false);
     }
   };
@@ -73,23 +74,23 @@ export default function NewDepositPage() {
         className="inline-flex items-center gap-1 text-purple-500 hover:text-purple-700 mb-4"
       >
         <ArrowRight className="w-4 h-4" />
-        {STRINGS.common.back}
+        {t.common.back}
       </Link>
 
-      <h1 className="text-2xl font-bold text-gray-800 mb-6">{STRINGS.deposits.createTitle}</h1>
+      <h1 className="text-2xl font-bold text-gray-800 mb-6">{t.deposits.createTitle}</h1>
 
       <Card>
         <form onSubmit={handleSubmit} className="space-y-5">
           <Input
-            label={STRINGS.deposits.depositName}
-            placeholder={STRINGS.deposits.depositNamePlaceholder}
+            label={t.deposits.depositName}
+            placeholder={t.deposits.depositNamePlaceholder}
             value={name}
             onChange={(e) => setName(e.target.value)}
             required
           />
 
           <Input
-            label={`${STRINGS.deposits.amount} (₪)`}
+            label={`${t.deposits.amount} (₪)`}
             type="number"
             step="0.01"
             min="0.01"
@@ -101,7 +102,7 @@ export default function NewDepositPage() {
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              {STRINGS.deposits.type}
+              {t.deposits.type}
             </label>
             <div className="grid grid-cols-2 gap-3">
               <button
@@ -114,7 +115,7 @@ export default function NewDepositPage() {
                 }`}
               >
                 <span className="text-2xl block mb-1">🌊</span>
-                <span className="font-medium">{STRINGS.deposits.flexible}</span>
+                <span className="font-medium">{t.deposits.flexible}</span>
                 {settings && (
                   <span className="block text-xs mt-1">
                     {formatPercent(settings.default_flexible_rate_bps)}
@@ -131,7 +132,7 @@ export default function NewDepositPage() {
                 }`}
               >
                 <span className="text-2xl block mb-1">🔐</span>
-                <span className="font-medium">{STRINGS.deposits.fixed}</span>
+                <span className="font-medium">{t.deposits.fixed}</span>
                 {settings && (
                   <span className="block text-xs mt-1">
                     {formatPercent(settings.default_fixed_rate_bps)}
@@ -143,7 +144,7 @@ export default function NewDepositPage() {
 
           {type === 'fixed' && (
             <Input
-              label={STRINGS.deposits.termDays}
+              label={t.deposits.termDays}
               type="number"
               min="30"
               max="3650"
@@ -161,7 +162,7 @@ export default function NewDepositPage() {
             {loading ? (
               <Loader2 className="w-5 h-5 animate-spin" />
             ) : (
-              STRINGS.deposits.create
+              t.deposits.create
             )}
           </Button>
         </form>

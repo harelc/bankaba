@@ -4,13 +4,14 @@ import { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { STRINGS } from '@/lib/constants';
+import { useLocale } from '@/contexts/locale-context';
 import { formatCurrency, formatPercent } from '@/lib/utils';
 import { Users, PiggyBank, Settings, Plus, Trash2, ChevronDown, ChevronUp } from 'lucide-react';
 import Link from 'next/link';
 import type { AccountWithBalance, Deposit } from '@/types';
 
 export default function AdminDashboardPage() {
+  const { t } = useLocale();
   const [accounts, setAccounts] = useState<AccountWithBalance[]>([]);
   const [expandedAccount, setExpandedAccount] = useState<string | null>(null);
   const [deposits, setDeposits] = useState<Record<string, Deposit[]>>({});
@@ -38,7 +39,7 @@ export default function AdminDashboardPage() {
   };
 
   const deleteDeposit = async (depositId: string, depositName: string, accountId: string) => {
-    if (!confirm(`למחוק את "${depositName}" לצמיתות? כל הפעולות הקשורות יימחקו.`)) return;
+    if (!confirm(t.admin.confirmDeleteDeposit(depositName))) return;
     const res = await fetch(`/api/deposits/${depositId}`, { method: 'DELETE' });
     if (res.ok) {
       setDeposits((prev) => ({
@@ -56,18 +57,18 @@ export default function AdminDashboardPage() {
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-gray-800">{STRINGS.admin.title}</h1>
+        <h1 className="text-2xl font-bold text-gray-800">{t.admin.title}</h1>
         <div className="flex gap-2">
           <Link href="/admin/accounts/new">
             <Button size="sm">
               <Plus className="w-4 h-4 me-1" />
-              {STRINGS.admin.createAccount}
+              {t.admin.createAccount}
             </Button>
           </Link>
           <Link href="/admin/settings">
             <Button variant="secondary" size="sm">
               <Settings className="w-4 h-4 me-1" />
-              {STRINGS.admin.settings}
+              {t.admin.settings}
             </Button>
           </Link>
         </div>
@@ -78,7 +79,7 @@ export default function AdminDashboardPage() {
           <div className="flex items-center gap-3">
             <PiggyBank className="w-8 h-8" />
             <div>
-              <p className="text-sm text-purple-200">{STRINGS.admin.totalInBank}</p>
+              <p className="text-sm text-purple-200">{t.admin.totalInBank}</p>
               <p className="text-2xl font-bold">{formatCurrency(totalInBank)}</p>
             </div>
           </div>
@@ -87,16 +88,16 @@ export default function AdminDashboardPage() {
           <div className="flex items-center gap-3">
             <Users className="w-8 h-8 text-purple-400" />
             <div>
-              <p className="text-sm text-gray-500">{STRINGS.admin.allAccounts}</p>
+              <p className="text-sm text-gray-500">{t.admin.allAccounts}</p>
               <p className="text-2xl font-bold text-gray-800">
-                {childAccounts.length} חשבונות · {totalDeposits} חיסכונות
+                {childAccounts.length} {t.admin.accountsCount} · {totalDeposits} {t.admin.depositsCount}
               </p>
             </div>
           </div>
         </Card>
       </div>
 
-      <h2 className="text-lg font-bold text-gray-800 mb-4">{STRINGS.admin.allAccounts}</h2>
+      <h2 className="text-lg font-bold text-gray-800 mb-4">{t.admin.allAccounts}</h2>
       <div className="grid gap-4">
         {childAccounts.map((account) => {
           const isExpanded = expandedAccount === account.id;
@@ -113,7 +114,7 @@ export default function AdminDashboardPage() {
                   <div>
                     <h3 className="font-bold text-gray-800">{account.name}</h3>
                     <p className="text-sm text-gray-500">
-                      {account.deposit_count} חיסכונות
+                      {account.deposit_count} {t.admin.depositsCount}
                     </p>
                   </div>
                 </div>
@@ -132,7 +133,7 @@ export default function AdminDashboardPage() {
               {isExpanded && (
                 <div className="mt-4 pt-4 border-t border-gray-100 space-y-3">
                   {accountDeposits.length === 0 && (
-                    <p className="text-sm text-gray-400 text-center py-2">אין חיסכונות</p>
+                    <p className="text-sm text-gray-400 text-center py-2">{t.admin.noDeposits}</p>
                   )}
                   {accountDeposits.map((dep) => {
                     const balance = dep.projected_balance_agorot || dep.balance_agorot;
@@ -142,10 +143,10 @@ export default function AdminDashboardPage() {
                           <div className="flex items-center gap-2">
                             <span className="font-medium text-gray-800">{dep.name}</span>
                             <Badge variant={dep.type === 'fixed' ? 'purple' : 'mint'}>
-                              {dep.type === 'fixed' ? STRINGS.deposits.fixed : STRINGS.deposits.flexible}
+                              {dep.type === 'fixed' ? t.deposits.fixed : t.deposits.flexible}
                             </Badge>
                             <Badge variant={dep.status === 'active' ? 'mint' : dep.status === 'matured' ? 'yellow' : 'gray'}>
-                              {STRINGS.deposits.status[dep.status]}
+                              {t.deposits.status[dep.status]}
                             </Badge>
                           </div>
                           <div className="flex items-center gap-4 mt-1 text-sm text-gray-500">
@@ -165,7 +166,7 @@ export default function AdminDashboardPage() {
                   })}
                   <Link href={`/admin/accounts?id=${account.id}`} className="block">
                     <Button variant="secondary" size="sm" className="w-full mt-2">
-                      עריכת חשבון
+                      {t.admin.editAccount}
                     </Button>
                   </Link>
                 </div>

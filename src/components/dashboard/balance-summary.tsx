@@ -2,7 +2,7 @@
 
 import { Card } from '@/components/ui/card';
 import { formatCurrency } from '@/lib/utils';
-import { STRINGS } from '@/lib/constants';
+import { useLocale } from '@/contexts/locale-context';
 import { AnimatedCurrency } from '@/components/ui/animated-number';
 import { accrueInterest } from '@/lib/interest';
 import { motion } from 'framer-motion';
@@ -13,6 +13,7 @@ interface BalanceSummaryProps {
 }
 
 export function BalanceSummary({ deposits }: BalanceSummaryProps) {
+  const { t } = useLocale();
   const activeDeposits = deposits.filter((d) => d.status === 'active');
   const totalBalance = activeDeposits.reduce(
     (sum, d) => sum + (d.projected_balance_agorot || d.balance_agorot),
@@ -31,7 +32,7 @@ export function BalanceSummary({ deposits }: BalanceSummaryProps) {
   return (
     <Card variant="highlight" className="mb-6">
       <div className="text-center">
-        <p className="text-purple-200 text-sm mb-1">{STRINGS.dashboard.totalBalance}</p>
+        <p className="text-purple-200 text-sm mb-1">{t.dashboard.totalBalance}</p>
         <motion.div
           initial={{ scale: 0.9 }}
           animate={{ scale: 1 }}
@@ -45,7 +46,7 @@ export function BalanceSummary({ deposits }: BalanceSummaryProps) {
             animate={{ opacity: 1 }}
             className="text-purple-200 text-sm flex items-center justify-center gap-1"
           >
-            ✨ {STRINGS.dashboard.totalInterest}
+            ✨ {t.dashboard.totalInterest}
             <span className="text-yellow-300 font-medium">
               {formatCurrency(totalInterest)}
             </span>
@@ -58,7 +59,7 @@ export function BalanceSummary({ deposits }: BalanceSummaryProps) {
             transition={{ delay: 0.3 }}
             className="text-purple-200 text-xs mt-1"
           >
-            {STRINGS.dashboard.grewToday}
+            {t.dashboard.grewToday}
             <span className="text-yellow-300 font-medium">
               {formatCurrency(todaysInterest)}
             </span>

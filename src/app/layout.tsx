@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import './globals.css';
+import { LocaleProvider } from '@/contexts/locale-context';
 
 export const metadata: Metadata = {
   title: 'הבנק של אבא',
@@ -20,7 +21,9 @@ export default function RootLayout({
         />
       </head>
       <body className="antialiased">
-        {children}
+        <LocaleProvider>
+          {children}
+        </LocaleProvider>
       </body>
     </html>
   );

@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { WithdrawDialog } from '@/components/deposits/withdraw-dialog';
 import { RecentTransactions } from '@/components/dashboard/recent-transactions';
 import { formatCurrency, formatPercent, daysBetween } from '@/lib/utils';
-import { STRINGS } from '@/lib/constants';
+import { useLocale } from '@/contexts/locale-context';
 import { ArrowRight, TrendingUp, Calendar, Wallet, Loader2, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 import { InterestChart } from '@/components/dashboard/interest-chart';
@@ -19,6 +19,7 @@ import { useAuth } from '@/hooks/use-auth';
 export default function DepositDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const router = useRouter();
+  const { t } = useLocale();
   const { deposit, isLoading, mutate } = useDeposit(id);
   const { transactions } = useTransactions(id, 50);
   const { isAdmin } = useAuth();
@@ -48,7 +49,7 @@ export default function DepositDetailPage({ params }: { params: Promise<{ id: st
   };
 
   const handleDelete = async () => {
-    if (!confirm('למחוק את החיסכון לצמיתות? כל הפעולות הקשורות יימחקו.')) return;
+    if (!confirm(t.deposits.confirmDelete)) return;
     const res = await fetch(`/api/deposits/${id}`, { method: 'DELETE' });
     if (res.ok) {
       router.push('/dashboard');
@@ -62,7 +63,7 @@ export default function DepositDetailPage({ params }: { params: Promise<{ id: st
         className="inline-flex items-center gap-1 text-purple-500 hover:text-purple-700 mb-4"
       >
         <ArrowRight className="w-4 h-4" />
-        {STRINGS.common.back}
+        {t.common.back}
       </Link>
 
       <Card variant="highlight" className="mb-6">
@@ -70,13 +71,13 @@ export default function DepositDetailPage({ params }: { params: Promise<{ id: st
           <div>
             <h1 className="text-2xl font-bold">{deposit.name}</h1>
             <Badge variant={deposit.type === 'fixed' ? 'purple' : 'mint'} className="mt-1 bg-white/20 text-white">
-              {deposit.type === 'fixed' ? STRINGS.deposits.fixed : STRINGS.deposits.flexible}
+              {deposit.type === 'fixed' ? t.deposits.fixed : t.deposits.flexible}
             </Badge>
           </div>
           <Badge
             variant={deposit.status === 'active' ? 'mint' : deposit.status === 'matured' ? 'yellow' : 'gray'}
           >
-            {STRINGS.deposits.status[deposit.status]}
+            {t.deposits.status[deposit.status]}
           </Badge>
         </div>
 
@@ -100,14 +101,14 @@ export default function DepositDetailPage({ params }: { params: Promise<{ id: st
         <Card>
           <div className="flex items-center gap-2 text-gray-500 text-sm mb-1">
             <Wallet className="w-4 h-4" />
-            {STRINGS.deposits.principal}
+            {t.deposits.principal}
           </div>
           <div className="text-xl font-bold text-gray-800">{formatCurrency(deposit.principal_agorot)}</div>
         </Card>
         <Card>
           <div className="flex items-center gap-2 text-gray-500 text-sm mb-1">
             <TrendingUp className="w-4 h-4" />
-            {STRINGS.deposits.interestRate}
+            {t.deposits.interestRate}
           </div>
           <div className="text-xl font-bold text-gray-800">{formatPercent(deposit.interest_rate_bps)}</div>
         </Card>
@@ -115,7 +116,7 @@ export default function DepositDetailPage({ params }: { params: Promise<{ id: st
           <Card>
             <div className="flex items-center gap-2 text-gray-500 text-sm mb-1">
               <Calendar className="w-4 h-4" />
-              {STRINGS.deposits.daysLeft}
+              {t.deposits.daysLeft}
             </div>
             <div className="text-xl font-bold text-gray-800">{daysLeft}</div>
           </Card>
@@ -130,7 +131,7 @@ export default function DepositDetailPage({ params }: { params: Promise<{ id: st
         <Card className="mb-6 bg-mint-50 border border-mint-200">
           <div className="text-center">
             <span className="text-2xl">✨</span>
-            <p className="text-sm text-mint-500 mt-1">ריבית שנצברה</p>
+            <p className="text-sm text-mint-500 mt-1">{t.deposits.accruedInterest}</p>
             <p className="text-2xl font-bold text-mint-500">{formatCurrency(interestEarned)}</p>
           </div>
         </Card>
@@ -142,7 +143,7 @@ export default function DepositDetailPage({ params }: { params: Promise<{ id: st
           className="w-full mb-6"
           onClick={() => setShowWithdraw(true)}
         >
-          {STRINGS.deposits.withdraw}
+          {t.deposits.withdraw}
         </Button>
       )}
 
@@ -153,7 +154,7 @@ export default function DepositDetailPage({ params }: { params: Promise<{ id: st
           onClick={handleDelete}
         >
           <Trash2 className="w-4 h-4 me-1" />
-          מחיקת חיסכון
+          {t.deposits.deleteDeposit}
         </Button>
       )}
 

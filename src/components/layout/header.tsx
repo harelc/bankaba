@@ -1,13 +1,14 @@
 'use client';
 
 import { useAuth } from '@/hooks/use-auth';
+import { useLocale } from '@/contexts/locale-context';
 import { Button } from '@/components/ui/button';
-import { STRINGS } from '@/lib/constants';
 import { LogOut, Settings, Home } from 'lucide-react';
 import Link from 'next/link';
 
 export function Header() {
   const { session, isAdmin, logout } = useAuth();
+  const { locale, setLocale, t } = useLocale();
 
   if (!session) return null;
 
@@ -18,24 +19,31 @@ export function Header() {
           <Link href={isAdmin ? '/admin' : '/dashboard'} className="flex items-center gap-2">
             <span className="text-2xl">🏦</span>
             <span className="font-bold text-purple-600 text-lg hidden sm:block">
-              {STRINGS.appName}
+              {t.appName}
             </span>
           </Link>
         </div>
 
         <div className="flex items-center gap-2">
+          <button
+            onClick={() => setLocale(locale === 'he' ? 'en' : 'he')}
+            className="px-2 py-1 text-xs font-medium rounded-lg border border-purple-200 text-purple-500 hover:bg-purple-50 transition-colors"
+          >
+            {locale === 'he' ? 'EN' : 'HE'}
+          </button>
+
           {isAdmin && (
             <>
               <Link href="/dashboard">
                 <Button variant="ghost" size="sm">
                   <Home className="w-4 h-4 me-1" />
-                  <span className="hidden sm:inline">לוח בקרה</span>
+                  <span className="hidden sm:inline">{t.common.dashboard}</span>
                 </Button>
               </Link>
               <Link href="/admin">
                 <Button variant="ghost" size="sm">
                   <Settings className="w-4 h-4 me-1" />
-                  <span className="hidden sm:inline">{STRINGS.admin.title}</span>
+                  <span className="hidden sm:inline">{t.admin.title}</span>
                 </Button>
               </Link>
             </>
