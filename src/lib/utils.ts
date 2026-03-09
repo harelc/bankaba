@@ -5,19 +5,17 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-const currencyFormatter = new Intl.NumberFormat('he-IL', {
-  style: 'currency',
-  currency: 'ILS',
-  minimumFractionDigits: 2,
-  maximumFractionDigits: 2,
-});
+const currencyFormatters: Record<string, Intl.NumberFormat> = {
+  he: new Intl.NumberFormat('he-IL', { style: 'currency', currency: 'ILS', minimumFractionDigits: 2, maximumFractionDigits: 2 }),
+  en: new Intl.NumberFormat('en-IL', { style: 'currency', currency: 'ILS', minimumFractionDigits: 2, maximumFractionDigits: 2 }),
+};
 
-export function formatCurrency(agorot: number): string {
-  return currencyFormatter.format(agorot / 100);
+export function formatCurrency(agorot: number, locale: 'he' | 'en' = 'he'): string {
+  return (currencyFormatters[locale] || currencyFormatters.he).format(agorot / 100);
 }
 
-export function formatDate(isoDate: string): string {
-  return new Date(isoDate).toLocaleDateString('he-IL', {
+export function formatDate(isoDate: string, locale: 'he' | 'en' = 'he'): string {
+  return new Date(isoDate).toLocaleDateString(locale === 'he' ? 'he-IL' : 'en-US', {
     year: 'numeric',
     month: 'short',
     day: 'numeric',

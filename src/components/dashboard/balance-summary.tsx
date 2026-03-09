@@ -13,7 +13,7 @@ interface BalanceSummaryProps {
 }
 
 export function BalanceSummary({ deposits }: BalanceSummaryProps) {
-  const { t } = useLocale();
+  const { t, locale } = useLocale();
   const activeDeposits = deposits.filter((d) => d.status === 'active');
   const totalBalance = activeDeposits.reduce(
     (sum, d) => sum + (d.projected_balance_agorot || d.balance_agorot),
@@ -38,7 +38,7 @@ export function BalanceSummary({ deposits }: BalanceSummaryProps) {
           animate={{ scale: 1 }}
           className="text-4xl sm:text-5xl font-bold mb-2"
         >
-          <AnimatedCurrency value={totalBalance} duration={1200} />
+          <AnimatedCurrency value={totalBalance} duration={1200} locale={locale} />
         </motion.div>
         {totalInterest > 0 && (
           <motion.p
@@ -48,7 +48,7 @@ export function BalanceSummary({ deposits }: BalanceSummaryProps) {
           >
             ✨ {t.dashboard.totalInterest}
             <span className="text-yellow-300 font-medium">
-              {formatCurrency(totalInterest)}
+              {formatCurrency(totalInterest, locale)}
             </span>
           </motion.p>
         )}
@@ -61,7 +61,7 @@ export function BalanceSummary({ deposits }: BalanceSummaryProps) {
           >
             {t.dashboard.grewToday}
             <span className="text-yellow-300 font-medium">
-              {formatCurrency(todaysInterest)}
+              {formatCurrency(todaysInterest, locale)}
             </span>
           </motion.p>
         )}

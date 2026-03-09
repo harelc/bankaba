@@ -17,7 +17,7 @@ interface WithdrawDialogProps {
 }
 
 export function WithdrawDialog({ deposit, open, onClose, onConfirm }: WithdrawDialogProps) {
-  const { t } = useLocale();
+  const { t, locale } = useLocale();
   const [loading, setLoading] = useState(false);
 
   const displayBalance = deposit.projected_balance_agorot || deposit.balance_agorot;
@@ -53,7 +53,7 @@ export function WithdrawDialog({ deposit, open, onClose, onConfirm }: WithdrawDi
               <div className="flex justify-between">
                 <span>{t.deposits.penaltyAmount}:</span>
                 <span className="text-red-600 font-medium">
-                  -{formatCurrency(penalty.penaltyAmount)}
+                  -{formatCurrency(penalty.penaltyAmount, locale)}
                 </span>
               </div>
             </div>
@@ -63,7 +63,7 @@ export function WithdrawDialog({ deposit, open, onClose, onConfirm }: WithdrawDi
         <div className="bg-purple-50 rounded-2xl p-4 mb-6">
           <p className="text-sm text-gray-600">{t.deposits.youWillReceive}</p>
           <p className="text-3xl font-bold text-purple-600 mt-1">
-            {formatCurrency(penalty.netAmount)}
+            {formatCurrency(penalty.netAmount, locale)}
           </p>
         </div>
 

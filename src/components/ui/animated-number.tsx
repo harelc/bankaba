@@ -7,9 +7,10 @@ interface AnimatedNumberProps {
   value: number;
   className?: string;
   duration?: number;
+  locale?: 'he' | 'en';
 }
 
-export function AnimatedCurrency({ value, className, duration = 1000 }: AnimatedNumberProps) {
+export function AnimatedCurrency({ value, className, duration = 1000, locale = 'he' }: AnimatedNumberProps) {
   const [display, setDisplay] = useState(0);
   const startRef = useRef(0);
   const startTimeRef = useRef<number | null>(null);
@@ -40,5 +41,5 @@ export function AnimatedCurrency({ value, className, duration = 1000 }: Animated
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value, duration]);
 
-  return <span className={className}>{formatCurrency(display)}</span>;
+  return <span className={className}>{formatCurrency(display, locale)}</span>;
 }

@@ -19,7 +19,7 @@ interface InterestChartProps {
 }
 
 export function InterestChart({ deposit }: InterestChartProps) {
-  const { t, dir } = useLocale();
+  const { t, dir, locale } = useLocale();
 
   const data = useMemo(() => {
     const points: { day: number; label: string; balance: number }[] = [];
@@ -70,7 +70,7 @@ export function InterestChart({ deposit }: InterestChartProps) {
       <div className="flex items-center justify-between mb-4">
         <h3 className="font-bold text-gray-800">📈 {t.chart.growthForecast}</h3>
         <span className="text-sm text-mint-500 font-medium">
-          +{formatCurrency(totalGrowth)} {t.chart.expectedInterest}
+          +{formatCurrency(totalGrowth, locale)} {t.chart.expectedInterest}
         </span>
       </div>
       <div className="h-52 -ms-2">
@@ -99,7 +99,7 @@ export function InterestChart({ deposit }: InterestChartProps) {
             />
             <Tooltip
               // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              formatter={(value: any) => [formatCurrency(Number(value)), t.chart.balance]}
+              formatter={(value: any) => [formatCurrency(Number(value), locale), t.chart.balance]}
               labelFormatter={(label: any) => String(label)}
               contentStyle={{
                 borderRadius: '16px',

@@ -19,7 +19,7 @@ import { useAuth } from '@/hooks/use-auth';
 export default function DepositDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const router = useRouter();
-  const { t } = useLocale();
+  const { t, locale } = useLocale();
   const { deposit, isLoading, mutate } = useDeposit(id);
   const { transactions } = useTransactions(id, 50);
   const { isAdmin } = useAuth();
@@ -81,7 +81,7 @@ export default function DepositDetailPage({ params }: { params: Promise<{ id: st
           </Badge>
         </div>
 
-        <AnimatedCurrency value={displayBalance} className="text-4xl font-bold mt-4 block" />
+        <AnimatedCurrency value={displayBalance} className="text-4xl font-bold mt-4 block" locale={locale} />
 
         {deposit.type === 'fixed' && deposit.maturity_date && deposit.status === 'active' && daysLeft !== null && (
           <div className="mt-4">
@@ -103,7 +103,7 @@ export default function DepositDetailPage({ params }: { params: Promise<{ id: st
             <Wallet className="w-4 h-4" />
             {t.deposits.principal}
           </div>
-          <div className="text-xl font-bold text-gray-800">{formatCurrency(deposit.principal_agorot)}</div>
+          <div className="text-xl font-bold text-gray-800">{formatCurrency(deposit.principal_agorot, locale)}</div>
         </Card>
         <Card>
           <div className="flex items-center gap-2 text-gray-500 text-sm mb-1">
@@ -132,7 +132,7 @@ export default function DepositDetailPage({ params }: { params: Promise<{ id: st
           <div className="text-center">
             <span className="text-2xl">✨</span>
             <p className="text-sm text-mint-500 mt-1">{t.deposits.accruedInterest}</p>
-            <p className="text-2xl font-bold text-mint-500">{formatCurrency(interestEarned)}</p>
+            <p className="text-2xl font-bold text-mint-500">{formatCurrency(interestEarned, locale)}</p>
           </div>
         </Card>
       )}

@@ -11,7 +11,7 @@ import Link from 'next/link';
 import type { AccountWithBalance, Deposit } from '@/types';
 
 export default function AdminDashboardPage() {
-  const { t } = useLocale();
+  const { t, locale } = useLocale();
   const [accounts, setAccounts] = useState<AccountWithBalance[]>([]);
   const [expandedAccount, setExpandedAccount] = useState<string | null>(null);
   const [deposits, setDeposits] = useState<Record<string, Deposit[]>>({});
@@ -80,7 +80,7 @@ export default function AdminDashboardPage() {
             <PiggyBank className="w-8 h-8" />
             <div>
               <p className="text-sm text-purple-200">{t.admin.totalInBank}</p>
-              <p className="text-2xl font-bold">{formatCurrency(totalInBank)}</p>
+              <p className="text-2xl font-bold">{formatCurrency(totalInBank, locale)}</p>
             </div>
           </div>
         </Card>
@@ -120,7 +120,7 @@ export default function AdminDashboardPage() {
                 </div>
                 <div className="flex items-center gap-3">
                   <div className="text-2xl font-bold text-purple-600">
-                    {formatCurrency(Number(account.total_balance_agorot || 0))}
+                    {formatCurrency(Number(account.total_balance_agorot || 0), locale)}
                   </div>
                   {isExpanded ? (
                     <ChevronUp className="w-5 h-5 text-gray-400" />
@@ -150,7 +150,7 @@ export default function AdminDashboardPage() {
                             </Badge>
                           </div>
                           <div className="flex items-center gap-4 mt-1 text-sm text-gray-500">
-                            <span>{formatCurrency(balance)}</span>
+                            <span>{formatCurrency(balance, locale)}</span>
                             <span>{formatPercent(dep.interest_rate_bps)}</span>
                           </div>
                         </div>

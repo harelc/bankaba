@@ -16,7 +16,7 @@ interface DepositCardProps {
 }
 
 export function DepositCard({ deposit, index = 0 }: DepositCardProps) {
-  const { t } = useLocale();
+  const { t, locale } = useLocale();
   const displayBalance = deposit.projected_balance_agorot || deposit.balance_agorot;
   const interestEarned = displayBalance - deposit.principal_agorot;
   const daysLeft = deposit.maturity_date
@@ -43,13 +43,13 @@ export function DepositCard({ deposit, index = 0 }: DepositCardProps) {
             {deposit.status === 'active' && interestEarned > 0 && (
               <div className="flex items-center gap-1 text-mint-500 text-sm">
                 <Sparkles className="w-4 h-4" />
-                <span>+{formatCurrency(interestEarned)}</span>
+                <span>+{formatCurrency(interestEarned, locale)}</span>
               </div>
             )}
           </div>
 
           <div className="text-3xl font-bold text-purple-600 mb-4">
-            <AnimatedCurrency value={displayBalance} duration={800} />
+            <AnimatedCurrency value={displayBalance} duration={800} locale={locale} />
           </div>
 
           <div className="flex items-center gap-4 text-sm text-gray-500">
@@ -81,8 +81,8 @@ export function DepositCard({ deposit, index = 0 }: DepositCardProps) {
                 />
               </div>
               <div className="flex justify-between text-xs text-gray-400 mt-1">
-                <span>{formatDate(deposit.created_at)}</span>
-                <span>{formatDate(deposit.maturity_date)}</span>
+                <span>{formatDate(deposit.created_at, locale)}</span>
+                <span>{formatDate(deposit.maturity_date, locale)}</span>
               </div>
             </div>
           )}

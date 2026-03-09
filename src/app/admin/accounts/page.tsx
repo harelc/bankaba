@@ -12,7 +12,7 @@ import Link from 'next/link';
 import type { AccountWithBalance } from '@/types';
 
 export default function AdminAccountsPage() {
-  const { t } = useLocale();
+  const { t, locale } = useLocale();
   const [accounts, setAccounts] = useState<AccountWithBalance[]>([]);
   const [editing, setEditing] = useState<string | null>(null);
   const [editName, setEditName] = useState('');
@@ -122,7 +122,7 @@ export default function AdminAccountsPage() {
                   <div>
                     <h3 className="font-bold text-gray-800">{account.name}</h3>
                     <p className="text-sm text-gray-500">
-                      {account.deposit_count} {t.admin.depositsCount} · {formatCurrency(Number(account.total_balance_agorot || 0))}
+                      {account.deposit_count} {t.admin.depositsCount} · {formatCurrency(Number(account.total_balance_agorot || 0), locale)}
                     </p>
                   </div>
                 </div>
