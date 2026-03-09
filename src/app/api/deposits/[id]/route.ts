@@ -104,3 +104,29 @@ export async function PATCH(
     return NextResponse.json({ error: 'שגיאת שרת' }, { status: 500 });
   }
 }
+
+// DELETE /api/deposits/[id] - admin only, cascades transactions
+export async function DELETE(
+  _request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    await requireAdmin();
+    const { id } = await params;
+
+    const deposit = (await db.execute({ sql: 'SELECT * FROM deposits WHERE id = ?', args: [id] })).rows[0];
+    if (!deposit) {
+      return NextResponse.json({ error: 'חיסכון לא נמצא' }, { status: 404 });
+    }
+
+    await db.execute({ sql: 'DELETE FROM transactions WHERE deposit_id = ?', args: [id] });
+    await db.execute({ sql: 'DELETE FROM deposits WHERE id = ?', args: [id] });
+
+    return NextResponse.json({ ok: true });
+  } catch (error) {
+    if (error instanceof Error && (error.message === 'Forbidden' || error.message === 'Unauthorized')) {
+      return NextResponse.json({ error: 'אין הרשאה' }, { status: 403 });
+    }
+    return NextResponse.json({ error: 'שגיאת שרת' }, { status: 500 });
+  }
+}

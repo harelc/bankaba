@@ -10,16 +10,18 @@ import { WithdrawDialog } from '@/components/deposits/withdraw-dialog';
 import { RecentTransactions } from '@/components/dashboard/recent-transactions';
 import { formatCurrency, formatPercent, daysBetween } from '@/lib/utils';
 import { STRINGS } from '@/lib/constants';
-import { ArrowRight, TrendingUp, Calendar, Wallet, Loader2 } from 'lucide-react';
+import { ArrowRight, TrendingUp, Calendar, Wallet, Loader2, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 import { InterestChart } from '@/components/dashboard/interest-chart';
 import { AnimatedCurrency } from '@/components/ui/animated-number';
+import { useAuth } from '@/hooks/use-auth';
 
 export default function DepositDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const router = useRouter();
   const { deposit, isLoading, mutate } = useDeposit(id);
   const { transactions } = useTransactions(id, 50);
+  const { isAdmin } = useAuth();
   const [showWithdraw, setShowWithdraw] = useState(false);
 
   if (isLoading || !deposit) {
@@ -41,6 +43,14 @@ export default function DepositDetailPage({ params }: { params: Promise<{ id: st
     if (res.ok) {
       await mutate();
       setShowWithdraw(false);
+      router.push('/dashboard');
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!confirm('למחוק את החיסכון לצמיתות? כל הפעולות הקשורות יימחקו.')) return;
+    const res = await fetch(`/api/deposits/${id}`, { method: 'DELETE' });
+    if (res.ok) {
       router.push('/dashboard');
     }
   };
@@ -133,6 +143,17 @@ export default function DepositDetailPage({ params }: { params: Promise<{ id: st
           onClick={() => setShowWithdraw(true)}
         >
           {STRINGS.deposits.withdraw}
+        </Button>
+      )}
+
+      {isAdmin && (
+        <Button
+          variant="danger"
+          className="w-full mb-6"
+          onClick={handleDelete}
+        >
+          <Trash2 className="w-4 h-4 me-1" />
+          מחיקת חיסכון
         </Button>
       )}
 
