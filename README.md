@@ -215,11 +215,15 @@ Open [http://localhost:3000](http://localhost:3000). Log in as אבא to access 
 
 ### 6. Customize Your Bank
 
+**Language**: The app supports Hebrew and English out of the box. Users can toggle the language in the header (HE/EN button). The UI automatically switches between RTL and LTR. To change the default language, edit `src/contexts/locale-context.tsx` and change the default from `'he'` to `'en'`. The user's choice is persisted in `localStorage`.
+
+**Add or edit translations**: All UI strings are in `src/lib/i18n.ts`, organized into `he` and `en` objects with the same structure. To add a new language, add a new translation object (e.g., `es`, `fr`) and update the `Locale` type and `translations` record.
+
 **Change account names and passwords**: Log in as admin, go to the admin panel, and edit accounts or create new ones. You can also re-edit `src/lib/seed.ts` and re-run `npm run seed` (this will reset all data).
 
-**Change the bank name**: Edit `src/lib/constants.ts` — the `appName` field and any other Hebrew strings you want to personalize.
+**Change the bank name**: Edit the `appName` field in both `he` and `en` objects in `src/lib/i18n.ts`.
 
-**Change default interest rates**: Log in as admin → Settings, or edit the defaults in `src/lib/constants.ts`.
+**Change default interest rates**: Log in as admin → Settings, or edit the defaults in `src/lib/i18n.ts`.
 
 **Change the currency**: The app uses Israeli Shekels (₪/agorot). To change currency:
 1. Update `formatCurrency` in `src/lib/utils.ts` (change `currency: 'ILS'`)
@@ -283,12 +287,15 @@ bankaba/
 │   │   ├── dashboard/            # Child UI
 │   │   ├── admin/                # Admin UI
 │   │   └── api/                  # 11 API routes
+│   ├── contexts/
+│   │   └── locale-context.tsx    # i18n provider (HE/EN, RTL/LTR)
 │   ├── lib/
 │   │   ├── db.ts                 # Turso client
 │   │   ├── db-schema.ts          # Schema + auto-migration
 │   │   ├── auth.ts               # JWT + bcrypt utilities
 │   │   ├── interest.ts           # Compound interest engine
-│   │   ├── constants.ts          # Hebrew strings
+│   │   ├── i18n.ts               # Hebrew + English translations
+│   │   ├── constants.ts          # Re-exports Hebrew strings (compat)
 │   │   ├── utils.ts              # Formatting helpers
 │   │   └── seed.ts               # Test data seeder
 │   ├── components/               # UI components
